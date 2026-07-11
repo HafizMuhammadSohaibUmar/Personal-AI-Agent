@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Personal Assistant Documentation</title>
+  <style>
+    :root {
+      --text: #111;
+      --muted: #444;
+      --border: #ddd;
+      --code-bg: #f6f8fa;
+      --heading: #0b2a5a;
+    }
+    @page { margin: 18mm; }
+    html, body { background: #fff; color: var(--text); }
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans";
+      line-height: 1.45;
+      font-size: 12.5px;
+    }
+    h1, h2, h3 { color: var(--heading); margin: 0.8rem 0 0.4rem; }
+    h1 { font-size: 26px; }
+    h2 { font-size: 18px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+    h3 { font-size: 14px; }
+    p { margin: 0.35rem 0; }
+    ul { margin: 0.25rem 0 0.6rem 1.1rem; }
+    li { margin: 0.15rem 0; }
+    code { background: var(--code-bg); border: 1px solid var(--border); border-radius: 5px; padding: 0 4px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size: 0.95em; }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      overflow-x: auto;
+      margin: 0.5rem 0 0.9rem;
+    }
+    pre code { background: transparent; border: 0; padding: 0; }
+    .muted { color: var(--muted); }
+    .toc a { color: #0b2a5a; text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .box {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin: 0.5rem 0 1rem;
+    }
+    .k { font-weight: 650; }
+  </style>
+</head>
+<body>
+
+<h1>Personal Assistant — Complete Documentation</h1>
+<p class="muted">Local-only (SQLite) personal assistant with tasks, scheduling, daily planning, and time-blocking. Powered by LangGraph + FastAPI + Mistral.</p>
+
+<div class="box toc">
+  <div class="k">Table of contents</div>
+  <ul>
+    <li><a href="#overview">1) Overview</a></li>
+    <li><a href="#features">2) Features & automation</a></li>
+    <li><a href="#quickstart">3) Quickstart (Mode B / Web UI)</a></li>
+    <li><a href="#env">4) Environment variables</a></li>
+    <li><a href="#endpoints">5) Web UI & API endpoints</a></li>
+    <li><a href="#architecture">6) Architecture (LangGraph)</a></li>
+    <li><a href="#storage">7) Storage (SQLite)</a></li>
+    <li><a href="#tools">8) Tools catalog</a></li>
+    <li><a href="#examples">9) Usage examples</a></li>
+    <li><a href="#troubleshooting">10) Troubleshooting</a></li>
+  </ul>
+</div>
+
+<h2 id="overview">1) Overview</h2>
+<p>This project runs a local web server that exposes:</p>
+<ul>
+  <li><span class="k">Custom web chat UI</span> at <code>/</code></li>
+  <li><span class="k">LangServe API</span> at <code>/chat/*</code> (e.g. <code>/chat/invoke</code>)</li>
+  <li><span class="k">LangGraph workflow</span> that calls tools to manage tasks and calendar events stored locally in SQLite</li>
+</ul>
+<p>The assistant is designed to keep scheduling local-only and to propose scheduling decisions based on stored priority rules and working-hour constraints.</p>
+
+<h2 id="features">2) Features & automation</h2>
+<h3>2.1 Task automation (local-only)</h3>
+<ul>
+  <li>Create tasks (title, due date, tags, priority, estimate)</li>
+  <li>List tasks (open/completed)</li>
+  <li>Complete tasks</li>
+</ul>
+
+<h3>2.2 Calendar + scheduling automation (local-only)</h3>
+<ul>
+  <li>Create and list events stored in SQLite</li>
+  <li>Find free slots within constraints</li>
+  <li>Auto-schedule when user does not specify an exact time</li>
+</ul>
+
+<h3>2.3 Daily planning + time-blocking</h3>
+<ul>
+  <li>Generate a daily plan using current tasks, events, and priority rules</li>
+  <li>Time-block top tasks into free time within <span class="k">09:00–21:00</span> local time</li>
+</ul>
+
+<h3>2.4 Not implemented (yet)</h3>
+<ul>
+  <li>No background reminders or push notifications</li>
+  <li>No email/Google Calendar integrations</li>
+  <li>No autonomous rescheduling unless you ask for it</li>
+</ul>
+
+<h2 id="quickstart">3) Quickstart (Mode B / Web UI)</h2>
+<p class="k">Run from the project root:</p>
+<pre><code class="language-powershell">poetry run python app.py</code></pre>
+
+<p>Then open:</p>
+<ul>
+  <li>UI: <code>http://localhost:8000/</code></li>
+  <li>API docs: <code>http://localhost:8000/docs</code></li>
+  <li>LangServe playground: <code>http://localhost:8000/chat/playground/</code></li>
+</ul>
+
+<p class="muted">Tip: in the UI, click <span class="k">Reset</span> to reset browser session state.</p>
+
+<h2 id="env">4) Environment variables</h2>
+<p>Set one of these environment variables:</p>
+<ul>
+  <li><code>MISTRALAI_API_KEY</code> (preferred)</li>
+  <li><code>MISTRAL_API_KEY</code></li>
+</ul>
+<p>The assistant code maps <code>MISTRALAI_API_KEY</code> to <code>MISTRAL_API_KEY</code> when needed.</p>
+
+<h2 id="endpoints">5) Web UI & API endpoints</h2>
+<h3>5.1 Custom UI</h3>
+<ul>
+  <li><code>GET /</code> returns HTML/CSS/JS chat UI</li>
+</ul>
+
+<h3>5.2 LangServe API</h3>
+<ul>
+  <li><code>POST /chat/invoke</code> is called by the UI</li>
+</ul>
+
+<p class="k">Example request:</p>
+<pre><code class="language-json">{
+  "input": {
+    "messages": [
+      {"type": "human", "content": "List my tasks"}
+    ]
+  },
+  "config": {
+    "configurable": {
+      "thread_id": "browser-session-id"
+    }
+  }
+}</code></pre>
+
+<h2 id="architecture">6) Architecture (LangGraph)</h2>
+<p>Main graph: <code>support_agent/personal_assistant/graph.py</code></p>
+<ul>
+  <li><span class="k">assistant</span> node: LLM decides what to do and produces tool calls</li>
+  <li><span class="k">tools</span> node: executes tools and returns tool results</li>
+</ul>
+<p>Routing rule:</p>
+<ul>
+  <li>If the assistant output contains tool calls → execute tools → return to assistant</li>
+  <li>Else finish</li>
+</ul>
+
+<h2 id="storage">7) Storage (SQLite)</h2>
+<ul>
+  <li><span class="k">Assistant data</span>: tasks/events/preferences stored locally via <code>support_agent/personal_assistant/db.py</code></li>
+  <li><span class="k">Graph checkpoints</span>: stored in <code>checkpoints_pa.sqlite</code> (LangGraph checkpointer)</li>
+</ul>
+
+<h2 id="tools">8) Tools catalog</h2>
+<p>Tools live in: <code>support_agent/personal_assistant/tools.py</code></p>
+
+<h3>Tasks</h3>
+<ul>
+  <li><code>create_task(...)</code></li>
+  <li><code>list_tasks(user_id, status="open")</code></li>
+  <li><code>complete_task(user_id, task_id)</code></li>
+</ul>
+
+<h3>Priority rules</h3>
+<ul>
+  <li><code>get_priority_rules(user_id)</code></li>
+  <li><code>set_priority_rules(user_id, rules_json)</code></li>
+</ul>
+
+<h3>Events + scheduling</h3>
+<ul>
+  <li><code>create_event(...)</code></li>
+  <li><code>list_events(...)</code></li>
+  <li><code>find_free_slots(...)</code></li>
+  <li><code>auto_schedule_event(...)</code></li>
+</ul>
+
+<h3>Planning</h3>
+<ul>
+  <li><code>daily_plan(user_id, day, max_tasks=...)</code></li>
+  <li><code>timeblock_top_tasks(user_id, day, ...)</code></li>
+</ul>
+
+<h2 id="examples">9) Usage examples (copy/paste into UI)</h2>
+<h3>Tasks</h3>
+<ul>
+  <li><code>Create a task: Pay electricity bill due today priority high estimate 20 minutes</code></li>
+  <li><code>List my tasks</code></li>
+  <li><code>Complete task &lt;task_id&gt;</code></li>
+</ul>
+
+<h3>Daily planning</h3>
+<ul>
+  <li><code>Make a daily plan for today</code></li>
+  <li><code>Make a daily plan for 2026-01-21</code></li>
+</ul>
+
+<h3>Time-blocking</h3>
+<ul>
+  <li><code>Time-block my top tasks for today</code></li>
+  <li><code>Schedule my tasks for tomorrow</code></li>
+</ul>
+
+<h3>Auto schedule event</h3>
+<ul>
+  <li><code>Schedule a 30 minute meeting tomorrow afternoon</code></li>
+  <li><code>Schedule 60 minutes of deep work today</code></li>
+</ul>
+
+<h2 id="troubleshooting">10) Troubleshooting</h2>
+<h3>10.1 Use the correct environment</h3>
+<p>Always start the server with:</p>
+<pre><code class="language-powershell">poetry run python app.py</code></pre>
+
+<h3>10.2 HTTP 500 errors</h3>
+<p>Check server logs. Common causes:</p>
+<ul>
+  <li>Missing <code>MISTRALAI_API_KEY</code></li>
+  <li>Wrong Python environment or dependency mismatch</li>
+  <li>Provider strictness around tool-call sequencing</li>
+</ul>
+
+<h3>10.3 Reset conversation state</h3>
+<ul>
+  <li>Use UI <span class="k">Reset</span> to generate a new browser session thread id</li>
+</ul>
+
+<hr />
+<p class="muted">Generated for PDF export. Open this HTML in a browser and use Print → Save as PDF.</p>
+
+</body>
+</html>
