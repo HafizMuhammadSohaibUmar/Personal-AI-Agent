@@ -70,38 +70,52 @@ def start() -> None:
   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
   <title>Personal AI Agent</title>
   <style>
-    :root { --bg:#0b1020; --panel:#111a33; --panel2:#0f1730; --text:#e7ecff; --muted:#aab3d5; --accent:#6ea8fe; --danger:#ff6b6b; }
+    :root { --bg:#0A0908; --panel:#18160E; --panel2:#201D12; --text:#F5F0E4; --muted:#9A9080; --accent:#4FB39F; --gold:#C49A1A; --line:rgba(255,255,255,0.08); }
     * { box-sizing: border-box; }
-    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; background: radial-gradient(1200px 800px at 20% 0%, #1a2455 0%, var(--bg) 50%, #070a14 100%); color:var(--text); }
-    .wrap { max-width: 980px; margin: 0 auto; padding: 24px; }
-    .header { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom: 16px; }
-    .title { font-size: 18px; font-weight: 650; }
-    .sub { color: var(--muted); font-size: 12px; }
-    .card { background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03)); border: 1px solid rgba(255,255,255,0.10); border-radius: 14px; overflow: hidden; }
+    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; background: radial-gradient(circle at top left, rgba(47,143,126,0.16), transparent 34%), var(--bg); color:var(--text); }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 28px; }
+    .header { display:grid; grid-template-columns: minmax(0,1fr) auto; align-items:start; gap:20px; margin-bottom: 18px; padding: 28px; border:1px solid var(--line); border-radius:18px; background:rgba(17,16,9,0.82); }
+    .badge { display:inline-flex; color:var(--accent); border:1px solid rgba(79,179,159,0.28); background:rgba(79,179,159,0.12); border-radius:999px; padding:6px 10px; font-size:12px; font-weight:800; margin-bottom:12px; }
+    .title { font-size: clamp(34px, 5vw, 58px); line-height:1; font-weight: 800; letter-spacing:-0.03em; }
+    .sub { color: var(--muted); font-size: 16px; line-height:1.7; max-width: 720px; margin-top:12px; }
+    .card { background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015)), var(--panel); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
     .chat { height: 64vh; min-height: 420px; overflow:auto; padding: 16px; background: rgba(0,0,0,0.18); }
     .row { display:flex; margin: 10px 0; }
     .row.user { justify-content:flex-end; }
     .bubble { max-width: 78%; padding: 10px 12px; border-radius: 12px; line-height: 1.35; white-space: pre-wrap; word-break: break-word; }
-    .user .bubble { background: rgba(110,168,254,0.20); border: 1px solid rgba(110,168,254,0.35); }
+    .user .bubble { background: rgba(79,179,159,0.14); border: 1px solid rgba(79,179,159,0.28); }
     .bot .bubble { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10); }
     .meta { margin-top: 4px; font-size: 11px; color: var(--muted); }
     .controls { display:flex; gap: 10px; padding: 12px; border-top: 1px solid rgba(255,255,255,0.10); background: rgba(0,0,0,0.10); }
-    textarea { flex: 1; resize:none; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.14); background: rgba(0,0,0,0.20); color: var(--text); outline: none; min-height: 44px; max-height: 160px; }
-    button { padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.08); color: var(--text); cursor:pointer; }
-    button.primary { background: rgba(110,168,254,0.25); border-color: rgba(110,168,254,0.45); }
+    textarea { flex: 1; resize:none; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: #0f0e09; color: var(--text); outline: none; min-height: 44px; max-height: 160px; }
+    button { padding: 10px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel2); color: var(--text); cursor:pointer; font-weight:700; }
+    button.primary { background: var(--gold); border-color: var(--gold); color:var(--bg); }
     button:disabled { opacity: 0.55; cursor: not-allowed; }
-    .pill { font-size: 12px; padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.14); background: rgba(0,0,0,0.20); color: var(--muted); }
+    .pill { font-size: 12px; padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(196,154,26,0.22); background: rgba(196,154,26,0.08); color: var(--muted); white-space:nowrap; }
     a { color: var(--accent); text-decoration: none; }
+    .prompts { display:grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap:10px; margin-bottom:14px; }
+    .prompt { text-align:left; min-height:64px; color:var(--muted); font-weight:600; }
+    .prompt strong { display:block; color:var(--text); margin-bottom:4px; }
+    @media(max-width:840px){ .header{grid-template-columns:1fr;} .prompts{grid-template-columns:1fr 1fr;} }
+    @media(max-width:560px){ .wrap{padding:16px;} .prompts{grid-template-columns:1fr;} .controls{flex-wrap:wrap;} .controls textarea{flex-basis:100%;} }
   </style>
 </head>
 <body>
   <div class=\"wrap\">
     <div class=\"header\">
       <div>
+        <div class=\"badge\">Live personal agent</div>
         <div class=\"title\">Personal AI Agent</div>
-        <div class=\"sub\">Task planning, calendar scheduling, and daily prioritization with local SQLite memory.</div>
+        <div class=\"sub\">A self-hosted LangGraph assistant for task capture, daily planning, free-slot search, and local calendar time-blocking. The agent uses real SQLite tools instead of only generating text.</div>
       </div>
       <div class=\"pill\">API: <a href=\"/docs\" target=\"_blank\">/docs</a> | LangServe: <a href=\"/chat/playground/\" target=\"_blank\">/chat/playground</a></div>
+    </div>
+
+    <div class=\"prompts\">
+      <button class=\"prompt\" type=\"button\" data-prompt=\"Create a high priority task to prepare my client proposal tomorrow.\"><strong>Create task</strong>High-priority task with due date</button>
+      <button class=\"prompt\" type=\"button\" data-prompt=\"Find free slots for 45 minutes tomorrow.\"><strong>Find slots</strong>Search the local calendar</button>
+      <button class=\"prompt\" type=\"button\" data-prompt=\"Make my daily plan for tomorrow.\"><strong>Daily plan</strong>Rank open tasks</button>
+      <button class=\"prompt\" type=\"button\" data-prompt=\"Time-block my top 3 tasks tomorrow.\"><strong>Time-block</strong>Create scheduled events</button>
     </div>
 
     <div class=\"card\">
@@ -201,6 +215,12 @@ def start() -> None:
       localStorage.removeItem('chat_history');
       localStorage.removeItem('thread_id');
       render([]);
+    });
+    document.querySelectorAll('[data-prompt]').forEach((button) => {
+      button.addEventListener('click', () => {
+        msgEl.value = button.dataset.prompt;
+        msgEl.focus();
+      });
     });
 
     render(loadHistory());
