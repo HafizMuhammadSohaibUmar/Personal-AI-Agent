@@ -62,6 +62,8 @@ MISTRALAI_API_KEY=your_mistral_api_key
 LANGCHAIN_TRACING_V2=false
 LANGCHAIN_API_KEY=
 LANGCHAIN_PROJECT=personal-ai-agent
+PUBLIC_ORIGIN=https://personal-ai-agent.example.com
+PORT=8006
 ```
 
 `MISTRALAI_API_KEY` is required. LangSmith variables are optional.
@@ -89,7 +91,7 @@ poetry run python app.py
 Open:
 
 ```text
-http://localhost:8000
+http://localhost:8006
 ```
 
 Useful endpoints:

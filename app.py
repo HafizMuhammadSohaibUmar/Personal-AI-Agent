@@ -244,8 +244,9 @@ def start() -> None:
     runnable = runnable.with_types(input_type=ChatInputType, output_type=AIMessage)
 
     add_routes(app, runnable, path="/chat", playground_type="chat")
-    print("Starting server...")
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.getenv("PORT", "8006"))
+    print(f"Starting server on port {port}...")
+    uvicorn.run(app, host="0.0.0.0", port=port)
 
 
 if __name__ == "__main__":
