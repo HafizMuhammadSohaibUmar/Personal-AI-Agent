@@ -8,7 +8,6 @@ The agent manages personal productivity through a browser chat interface. It can
 
 - Live demo: `https://personal-ai-agent.sohaib.systems/`
 - Repository: `https://github.com/HafizMuhammadSohaibUmar/Personal-AI-Agent`
-- LangServe playground: `/chat/playground/`
 
 ## What It Does
 
@@ -31,7 +30,7 @@ Browser Chat UI
   -> LangGraph SQLite checkpoint memory
 ```
 
-## Engineering Signals
+## Engineering Points
 
 - Tool-calling agents can operate over real local state rather than only generating text.
 - LangGraph keeps the workflow explicit: assistant turn, tool route, tool execution, assistant response.
@@ -155,8 +154,4 @@ These files are ignored by Git because they contain runtime state.
 - There is no login system yet.
 - Calendar events are local only; Google Calendar or Outlook sync is not implemented.
 - The assistant depends on the configured Mistral API key.
-
-## License
-
-MIT
 
