@@ -1,12 +1,12 @@
 # Personal AI Agent
 
-A local AI personal assistant built with FastAPI, LangServe, LangGraph, Mistral, and SQLite.
+A self-hosted personal productivity agent built with FastAPI, LangServe, LangGraph, Mistral, and SQLite.
 
-The agent manages personal productivity through a chat interface. It can create tasks, list tasks, complete tasks, create calendar events, find free time slots, auto-schedule work, generate a daily plan, and time-block priority tasks.
+The agent manages personal productivity through a browser chat interface. It can create tasks, list tasks, complete tasks, create calendar events, find free time slots, auto-schedule work, generate a daily plan, and time-block priority tasks. Runtime data is stored in SQLite on the server running the app.
 
 ## Live Demo
 
-- Live app: `https://personal-ai-agent.sohaib.systems/`
+- Live demo: `https://personal-ai-agent.sohaib.systems/`
 - Repository: `https://github.com/HafizMuhammadSohaibUmar/Personal-AI-Agent`
 - LangServe playground: `/chat/playground/`
 
@@ -15,7 +15,7 @@ The agent manages personal productivity through a chat interface. It can create 
 - Runs a FastAPI web app with a built-in browser chat UI.
 - Exposes LangServe endpoints at `/chat`.
 - Uses a LangGraph tool-calling workflow for assistant actions.
-- Stores tasks, events, and priority rules in local SQLite.
+- Stores tasks, events, and priority rules in SQLite.
 - Stores conversation checkpoints in SQLite so each browser session can continue where it left off.
 - Uses Mistral through `langchain-mistralai`.
 
@@ -31,11 +31,11 @@ Browser Chat UI
   -> LangGraph SQLite checkpoint memory
 ```
 
-## What It Proves
+## Engineering Signals
 
 - Tool-calling agents can operate over real local state rather than only generating text.
 - LangGraph keeps the workflow explicit: assistant turn, tool route, tool execution, assistant response.
-- A small single-user assistant can be self-hosted with FastAPI, LangServe, Mistral, and SQLite.
+- A small single-user assistant can be self-hosted with FastAPI, LangServe, Mistral, and SQLite-backed state.
 - The assistant can turn natural language into practical actions: task creation, daily planning, free-slot search, and time-blocking.
 
 ## Core Features
@@ -53,19 +53,19 @@ Browser Chat UI
 
 ```text
 .
-├── app.py
-├── support_agent/
-│   └── personal_assistant/
-│       ├── db.py
-│       ├── graph.py
-│       ├── nodes.py
-│       ├── state.py
-│       └── tools.py
-├── pyproject.toml
-├── poetry.lock
-├── .env.example
-├── DECISIONS.md
-└── README.md
+app.py
+support_agent/
+  personal_assistant/
+    db.py
+    graph.py
+    nodes.py
+    state.py
+    tools.py
+pyproject.toml
+poetry.lock
+.env.example
+DECISIONS.md
+README.md
 ```
 
 ## How It Works
@@ -81,15 +81,15 @@ The active graph is defined in `support_agent/personal_assistant/graph.py`.
 
 ## Related AI Systems
 
-| System | Purpose | Links |
-| --- | --- | --- |
-| LeadPilot AI Voice Agent | Inbound phone agent for call qualification, emergency detection, and lead logging. | [Live](https://leadpilotai.sohaib.systems/) · [Repo](https://github.com/HafizMuhammadSohaibUmar/LeadPilotAI) |
-| Missed Call Text-Back AI Agent | SMS recovery and qualification after no-answer or busy calls. | [Live](https://missed-call-text-back-ai-agent.sohaib.systems/demo) · [Repo](https://github.com/HafizMuhammadSohaibUmar/Missed-Call-Text-Back-AI-Agent) |
-| Outbound Follow-Up AI Agent | Estimate, no-show, re-engagement, and seasonal follow-up campaigns. | [Live](https://outbound-followup-ai-agent.sohaib.systems/demo) · [Repo](https://github.com/HafizMuhammadSohaibUmar/Outbound-Follow-Up-AI-Agent) |
-| AI Auto Review Request Agent | Sentiment-aware post-job review and private feedback routing. | [Live](https://ai-review-agent.sohaib.systems/demo) · [Repo](https://github.com/HafizMuhammadSohaibUmar/AI-Auto-Review-Request-Agent) |
-| Web Chat Lead Qualifier Agent | Embeddable RAG chat widget for contractor websites. | [Live](https://web-chat-lead-qualifier-agent.sohaib.systems/demo) · [Repo](https://github.com/HafizMuhammadSohaibUmar/Web-Chat-Lead-Qualifier-Agent) |
-| Personal AI Agent | Local task, planning, and calendar assistant with LangGraph tools. | [Live](https://personal-ai-agent.sohaib.systems/) · [Repo](https://github.com/HafizMuhammadSohaibUmar/Personal-AI-Agent) |
-| Invoxia AI for ERPNext | Frappe/ERPNext assistant layer for navigation, voice input foundations, and live ERP answers. | [Live](https://invoxia.sohaib.systems/) · [Repo](https://github.com/HafizMuhammadSohaibUmar/InvoxiaAI-ERPNext) |
+| System | Purpose | Live Demo | Repository |
+| --- | --- | --- | --- |
+| LeadPilot AI Voice Agent | Inbound phone agent for call qualification, emergency detection, and lead logging. | [Live Demo](https://leadpilotai.sohaib.systems/) | [Repository](https://github.com/HafizMuhammadSohaibUmar/LeadPilotAI) |
+| Missed Call Text-Back AI Agent | SMS recovery and qualification after no-answer or busy calls. | [Live Demo](https://missed-call-text-back-ai-agent.sohaib.systems/demo) | [Repository](https://github.com/HafizMuhammadSohaibUmar/Missed-Call-Text-Back-AI-Agent) |
+| Outbound Follow-Up AI Agent | Estimate, no-show, re-engagement, and seasonal follow-up campaigns. | [Live Demo](https://outbound-followup-ai-agent.sohaib.systems/demo) | [Repository](https://github.com/HafizMuhammadSohaibUmar/Outbound-Follow-Up-AI-Agent) |
+| AI Auto Review Request Agent | Sentiment-aware post-job review and private feedback routing. | [Live Demo](https://ai-review-agent.sohaib.systems/demo) | [Repository](https://github.com/HafizMuhammadSohaibUmar/AI-Auto-Review-Request-Agent) |
+| Web Chat Lead Qualifier Agent | Embeddable RAG chat widget for contractor websites. | [Live Demo](https://web-chat-lead-qualifier-agent.sohaib.systems/demo) | [Repository](https://github.com/HafizMuhammadSohaibUmar/Web-Chat-Lead-Qualifier-Agent) |
+| Personal AI Agent | Self-hosted task, planning, and local-calendar assistant with LangGraph tools. | [Live Demo](https://personal-ai-agent.sohaib.systems/) | **This repo** |
+| Invoxia AI for ERPNext | Frappe/ERPNext assistant layer for navigation, voice input foundations, and live ERP answers. | [Live Demo](https://invoxia.sohaib.systems/) | [Repository](https://github.com/HafizMuhammadSohaibUmar/InvoxiaAI-ERPNext) |
 
 ## Environment Variables
 
@@ -139,19 +139,19 @@ Time-block my top 3 tasks tomorrow.
 Mark task 2 complete.
 ```
 
-## Local Data
+## Runtime Data
 
-Runtime data is intentionally local:
+Runtime data is stored beside the running app:
 
 - `assistant.sqlite` stores tasks, events, and priority rules.
 - `checkpoints_pa.sqlite` stores LangGraph checkpoints.
 
-These files are ignored by Git because they contain local runtime state.
+These files are ignored by Git because they contain runtime state.
 
 ## Limitations
 
-- This is a single-user local assistant by default.
-- Tasks and events are stored locally in SQLite.
+- This is a single-user assistant by default.
+- Tasks and events are stored in SQLite on the running host.
 - There is no login system yet.
 - Calendar events are local only; Google Calendar or Outlook sync is not implemented.
 - The assistant depends on the configured Mistral API key.
@@ -159,3 +159,4 @@ These files are ignored by Git because they contain local runtime state.
 ## License
 
 MIT
+

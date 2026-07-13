@@ -26,6 +26,13 @@ def _to_iso(dt: datetime) -> str:
     return dt.astimezone().isoformat(timespec="seconds")
 
 
+def _parse_local_datetime(value: str) -> datetime:
+    parsed = datetime.fromisoformat(value)
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=datetime.now().astimezone().tzinfo)
+    return parsed
+
+
 def _overlaps(a_start: datetime, a_end: datetime, b_start: datetime, b_end: datetime) -> bool:
     return a_start < b_end and b_start < a_end
 
@@ -147,7 +154,7 @@ def find_free_slots(
     busy = _list_events_between(user_id, _to_iso(window_start), _to_iso(window_end))
     busy_ranges: List[tuple[datetime, datetime]] = []
     for s, e in busy:
-        busy_ranges.append((datetime.fromisoformat(s), datetime.fromisoformat(e)))
+        busy_ranges.append((_parse_local_datetime(s), _parse_local_datetime(e)))
 
     slots: List[Dict[str, str]] = []
     cursor = window_start
