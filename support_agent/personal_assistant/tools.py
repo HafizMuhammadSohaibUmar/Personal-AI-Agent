@@ -19,11 +19,21 @@ init_db()
 
 
 def _parse_date(d: str) -> date:
-    return date.fromisoformat(d)
+    value = (d or "").strip().lower()
+    today = datetime.now().astimezone().date()
+    if value in {"today", "this day"}:
+        return today
+    if value in {"tomorrow", "next day"}:
+        return today + timedelta(days=1)
+    return date.fromisoformat(value)
 
 
 def _to_iso(dt: datetime) -> str:
     return dt.astimezone().isoformat(timespec="seconds")
+
+
+def _normalize_day(day: str) -> str:
+    return _parse_date(day).isoformat()
 
 
 def _parse_local_datetime(value: str) -> datetime:
@@ -205,11 +215,12 @@ def auto_schedule_event(
     """Auto-schedule an event into the best free slot (09:00-21:00) using the user's priority rules."""
     tags = json.loads(tags_json) if tags_json else []
     rules = _get_priority_rules(user_id)
+    normalized_day = _normalize_day(day)
 
     slots = find_free_slots.invoke(
         {
             "user_id": user_id,
-            "day": day,
+            "day": normalized_day,
             "duration_minutes": duration_minutes,
         }
     )
@@ -247,13 +258,14 @@ def daily_plan(
 
     Returns tasks sorted by computed priority score and basic day summary.
     """
+    normalized_day = _normalize_day(day)
     rules = _get_priority_rules(user_id)
     tasks = _list_tasks(user_id=user_id, status="open")
     scored = [(t, _score_task(t, rules)) for t in tasks]
     scored.sort(key=lambda x: x[1], reverse=True)
     top = scored[: max_tasks]
     return {
-        "day": day,
+        "day": normalized_day,
         "tasks": [
             {
                 "id": t.get("id"),
@@ -280,11 +292,12 @@ def timeblock_top_tasks(
     Creates events titled "Task: <title>" within 09:00-21:00 local time,
     avoiding conflicts with existing events.
     """
+    normalized_day = _normalize_day(day)
     rules = _get_priority_rules(user_id)
     plan = daily_plan.invoke(
         {
             "user_id": user_id,
-            "day": day,
+            "day": normalized_day,
             "max_tasks": max_tasks,
         }
     )
@@ -298,7 +311,7 @@ def timeblock_top_tasks(
             {
                 "user_id": user_id,
                 "title": f"Task: {t.get('title')}",
-                "day": day,
+                "day": normalized_day,
                 "duration_minutes": int(est),
                 "tags_json": tags_json,
                 "notes": f"Auto-blocked from tasks table. task_id={t.get('id')}",
@@ -306,7 +319,7 @@ def timeblock_top_tasks(
         )
         if "error" not in res:
             created.append({"task_id": t.get("id"), **res})
-    return {"day": day, "created": created}
+    return {"day": normalized_day, "created": created}
 
 
 personal_assistant_tools = [

@@ -3,12 +3,14 @@ from dotenv import load_dotenv
 load_dotenv()
 import logging
 import os
+from pathlib import Path
 from typing import Any, List, TypedDict
 
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from langchain_core.messages import AIMessage, AnyMessage, HumanMessage, SystemMessage
 from langchain_core.runnables import RunnableLambda
 from langserve import add_routes
@@ -44,6 +46,7 @@ def start() -> None:
         version="1.0",
         description="A local LangGraph personal assistant for tasks, planning, and scheduling.",
     )
+    app.mount("/static", StaticFiles(directory=str(Path(__file__).parent / "static")), name="static")
 
     origins = [
         "http://localhost",
@@ -69,10 +72,19 @@ def start() -> None:
   <meta charset=\"utf-8\" />
   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
   <title>Personal AI Agent</title>
+  <link rel=\"icon\" type=\"image/jpeg\" href=\"/static/sohaib-profile.jpg\" />
   <style>
     :root { --bg:#0A0908; --panel:#18160E; --panel2:#201D12; --text:#F5F0E4; --muted:#9A9080; --accent:#4FB39F; --gold:#C49A1A; --line:rgba(255,255,255,0.08); }
     * { box-sizing: border-box; }
     body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; background: radial-gradient(circle at top left, rgba(47,143,126,0.16), transparent 34%), var(--bg); color:var(--text); }
+    .site-header { position: sticky; top: 0; z-index: 10; min-height: 72px; padding: 0 28px; display: flex; align-items: center; justify-content: space-between; gap: 18px; border-bottom: 1px solid var(--line); background: rgba(10,9,8,0.92); backdrop-filter: blur(12px); }
+    .brand { display: flex; align-items: center; gap: 12px; color: var(--text); text-decoration: none; min-width: 0; }
+    .brand img { width: 38px; height: 38px; border-radius: 8px; object-fit: cover; border: 1px solid var(--line); }
+    .brand strong { display: block; font-size: 15px; }
+    .brand span { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .nav-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+    .nav-actions a { min-height: 38px; display: inline-flex; align-items: center; padding: 0 14px; border: 1px solid var(--line); border-radius: 8px; background: #111009; color: var(--text); text-decoration: none; font-size: 13px; font-weight: 700; }
+    .nav-actions a.primary { background: var(--gold); border-color: var(--gold); color: var(--bg); }
     .wrap { max-width: 1120px; margin: 0 auto; padding: 28px; }
     .header { display:grid; grid-template-columns: minmax(0,1fr) auto; align-items:start; gap:20px; margin-bottom: 18px; padding: 28px; border:1px solid var(--line); border-radius:18px; background:rgba(17,16,9,0.82); }
     .badge { display:inline-flex; color:var(--accent); border:1px solid rgba(79,179,159,0.28); background:rgba(79,179,159,0.12); border-radius:999px; padding:6px 10px; font-size:12px; font-weight:800; margin-bottom:12px; }
@@ -107,11 +119,22 @@ def start() -> None:
     .footer-bottom { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; border-top:1px solid var(--line); padding-top:16px; }
     .footer-bottom-links { display:flex; gap:12px; flex-wrap:wrap; }
     .footer-bottom a { color:var(--text); text-decoration:none; }
-    @media(max-width:840px){ .header{grid-template-columns:1fr;} .prompts{grid-template-columns:1fr 1fr;} .footer-top{grid-template-columns:1fr;} }
+    @media(max-width:840px){ .site-header{position:static;align-items:flex-start;flex-direction:column;padding:16px 20px;} .header{grid-template-columns:1fr;} .prompts{grid-template-columns:1fr 1fr;} .footer-top{grid-template-columns:1fr;} }
     @media(max-width:560px){ .wrap{padding:16px;} .prompts{grid-template-columns:1fr;} .controls{flex-wrap:wrap;} .controls textarea{flex-basis:100%;} }
   </style>
 </head>
 <body>
+  <div class=\"site-header\">
+    <a class=\"brand\" href=\"https://sohaib.systems/\" target=\"_blank\" rel=\"noreferrer\">
+      <img src=\"/static/sohaib-profile.jpg\" alt=\"Sohaib Systems\">
+      <span><strong>Personal AI Agent</strong><span>sohaib.systems</span></span>
+    </a>
+    <div class=\"nav-actions\">
+      <a href=\"https://github.com/HafizMuhammadSohaibUmar/Personal-AI-Agent\" target=\"_blank\" rel=\"noreferrer\">GitHub</a>
+      <a href=\"/docs\" target=\"_blank\" rel=\"noreferrer\">API Docs</a>
+      <a class=\"primary\" href=\"https://sohaib.systems/portfolio.html\" target=\"_blank\" rel=\"noreferrer\">All Projects</a>
+    </div>
+  </div>
   <div class=\"wrap\">
     <div class=\"header\">
       <div>
