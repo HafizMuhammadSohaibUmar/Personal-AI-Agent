@@ -24,7 +24,9 @@ if not os.getenv("MISTRAL_API_KEY"):
     os.environ["MISTRAL_API_KEY"] = os.environ["MISTRALAI_API_KEY"]
 
 
-model_with_tools = ChatMistralAI(model="mistral-large-latest").bind_tools(
+model_with_tools = ChatMistralAI(
+    model=os.getenv("MISTRAL_MODEL", "mistral-small-latest")
+).bind_tools(
     personal_assistant_tools
 )
 
