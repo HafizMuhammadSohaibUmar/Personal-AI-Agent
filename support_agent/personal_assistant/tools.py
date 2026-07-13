@@ -206,7 +206,13 @@ def auto_schedule_event(
     tags = json.loads(tags_json) if tags_json else []
     rules = _get_priority_rules(user_id)
 
-    slots = find_free_slots(user_id=user_id, day=day, duration_minutes=duration_minutes)
+    slots = find_free_slots.invoke(
+        {
+            "user_id": user_id,
+            "day": day,
+            "duration_minutes": duration_minutes,
+        }
+    )
     if not slots:
         return {"error": "no_free_slots"}
 
@@ -275,20 +281,28 @@ def timeblock_top_tasks(
     avoiding conflicts with existing events.
     """
     rules = _get_priority_rules(user_id)
-    plan = daily_plan(user_id=user_id, day=day, max_tasks=max_tasks)
+    plan = daily_plan.invoke(
+        {
+            "user_id": user_id,
+            "day": day,
+            "max_tasks": max_tasks,
+        }
+    )
     created = []
     for t in plan.get("tasks", []):
         est = t.get("estimated_minutes")
         if not est:
             est = int(rules.get("default_estimated_minutes", 30))
         tags_json = json.dumps(["deep_work"])
-        res = auto_schedule_event(
-            user_id=user_id,
-            title=f"Task: {t.get('title')}",
-            day=day,
-            duration_minutes=int(est),
-            tags_json=tags_json,
-            notes=f"Auto-blocked from tasks table. task_id={t.get('id')}",
+        res = auto_schedule_event.invoke(
+            {
+                "user_id": user_id,
+                "title": f"Task: {t.get('title')}",
+                "day": day,
+                "duration_minutes": int(est),
+                "tags_json": tags_json,
+                "notes": f"Auto-blocked from tasks table. task_id={t.get('id')}",
+            }
         )
         if "error" not in res:
             created.append({"task_id": t.get("id"), **res})

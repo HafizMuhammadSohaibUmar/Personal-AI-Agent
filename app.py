@@ -96,7 +96,18 @@ def start() -> None:
     .prompts { display:grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap:10px; margin-bottom:14px; }
     .prompt { text-align:left; min-height:64px; color:var(--muted); font-weight:600; }
     .prompt strong { display:block; color:var(--text); margin-bottom:4px; }
-    @media(max-width:840px){ .header{grid-template-columns:1fr;} .prompts{grid-template-columns:1fr 1fr;} }
+    footer { border-top:1px solid var(--line); margin-top:28px; padding:24px 0; color:var(--muted); }
+    .footer-top { display:grid; grid-template-columns:minmax(0,1.4fr) 1fr 1fr; gap:18px; margin-bottom:18px; }
+    .footer-brand a { color:var(--text); font-size:24px; font-weight:900; text-decoration:none; }
+    .footer-brand span { color:var(--gold); }
+    .footer-brand p, .footer-col a, .footer-bottom { color:var(--muted); font-size:14px; }
+    .footer-col h4 { margin:0 0 8px; color:var(--text); }
+    .footer-links-list { list-style:none; padding:0; margin:0; display:grid; gap:6px; }
+    .footer-links-list a { text-decoration:none; }
+    .footer-bottom { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; border-top:1px solid var(--line); padding-top:16px; }
+    .footer-bottom-links { display:flex; gap:12px; flex-wrap:wrap; }
+    .footer-bottom a { color:var(--text); text-decoration:none; }
+    @media(max-width:840px){ .header{grid-template-columns:1fr;} .prompts{grid-template-columns:1fr 1fr;} .footer-top{grid-template-columns:1fr;} }
     @media(max-width:560px){ .wrap{padding:16px;} .prompts{grid-template-columns:1fr;} .controls{flex-wrap:wrap;} .controls textarea{flex-basis:100%;} }
   </style>
 </head>
@@ -126,6 +137,32 @@ def start() -> None:
         <button id=\"reset\">Reset</button>
       </div>
     </div>
+    <footer>
+      <div class=\"footer-top\">
+        <div class=\"footer-brand\">
+          <a href=\"https://sohaib.systems/\" target=\"_blank\" rel=\"noreferrer\">Sohaib<span>.</span></a>
+          <p>AI Solutions Engineer building practical automation systems with real tools, persistent state, and deployable web interfaces.</p>
+        </div>
+        <div class=\"footer-col\">
+          <h4>Project</h4>
+          <ul class=\"footer-links-list\">
+            <li><a href=\"https://github.com/HafizMuhammadSohaibUmar/Personal-AI-Agent\" target=\"_blank\" rel=\"noreferrer\">GitHub Repository</a></li>
+            <li><a href=\"/docs\" target=\"_blank\" rel=\"noreferrer\">API Docs</a></li>
+          </ul>
+        </div>
+        <div class=\"footer-col\">
+          <h4>Connect</h4>
+          <ul class=\"footer-links-list\">
+            <li><a href=\"https://sohaib.systems/portfolio.html\" target=\"_blank\" rel=\"noreferrer\">Project Portfolio</a></li>
+            <li><a href=\"mailto:hafizmuhammadsohaibumar@gmail.com\">Email</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class=\"footer-bottom\">
+        <span>2026 Hafiz Muhammad Sohaib Umar</span>
+        <div class=\"footer-bottom-links\"><a href=\"https://sohaib.systems/\" target=\"_blank\" rel=\"noreferrer\">sohaib.systems</a><a href=\"https://github.com/HafizMuhammadSohaibUmar\" target=\"_blank\" rel=\"noreferrer\">GitHub</a></div>
+      </div>
+    </footer>
   </div>
 
   <script>

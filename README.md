@@ -7,7 +7,30 @@ The agent manages personal productivity through a browser chat interface. It can
 ## Live Demo
 
 - Live demo: `https://personal-ai-agent.sohaib.systems/`
+- API docs: `https://personal-ai-agent.sohaib.systems/docs`
+- LangServe playground: `https://personal-ai-agent.sohaib.systems/chat/playground/`
 - Repository: `https://github.com/HafizMuhammadSohaibUmar/Personal-AI-Agent`
+
+How to evaluate the demo:
+
+1. Ask it to create a task with a due date and priority.
+2. Ask it to list open tasks.
+3. Ask it to find free slots for a duration.
+4. Ask it to make a daily plan.
+5. Ask it to time-block top tasks.
+6. Confirm the answers reflect real SQLite task and event state rather than only generic text.
+
+## Related AI Systems
+
+| System | Purpose | Live Demo | Repository |
+| --- | --- | --- | --- |
+| LeadPilot AI Voice Agent | Inbound phone agent for call qualification, emergency detection, and lead logging. | [Live Demo](https://leadpilotai.sohaib.systems/) | [Repository](https://github.com/HafizMuhammadSohaibUmar/LeadPilotAI) |
+| Missed Call Text-Back AI Agent | SMS recovery and qualification after no-answer or busy calls. | [Live Demo](https://missed-call-text-back-ai-agent.sohaib.systems/demo) | [Repository](https://github.com/HafizMuhammadSohaibUmar/Missed-Call-Text-Back-AI-Agent) |
+| Outbound Follow-Up AI Agent | Estimate, no-show, re-engagement, and seasonal follow-up campaigns. | [Live Demo](https://outbound-followup-ai-agent.sohaib.systems/demo) | [Repository](https://github.com/HafizMuhammadSohaibUmar/Outbound-Follow-Up-AI-Agent) |
+| AI Auto Review Request Agent | Sentiment-aware post-job review and private feedback routing. | [Live Demo](https://ai-review-agent.sohaib.systems/demo) | [Repository](https://github.com/HafizMuhammadSohaibUmar/AI-Auto-Review-Request-Agent) |
+| Web Chat Lead Qualifier Agent | Embeddable RAG chat widget for contractor websites. | [Live Demo](https://web-chat-lead-qualifier-agent.sohaib.systems/demo) | [Repository](https://github.com/HafizMuhammadSohaibUmar/Web-Chat-Lead-Qualifier-Agent) |
+| Personal AI Agent | Self-hosted task, planning, and local-calendar assistant with LangGraph tools. | [Live Demo](https://personal-ai-agent.sohaib.systems/) | **This repo** |
+| Invoxia AI for ERPNext | Frappe/ERPNext assistant layer for navigation, voice input foundations, and live ERP answers. | [Live Demo](https://invoxia.sohaib.systems/) | [Repository](https://github.com/HafizMuhammadSohaibUmar/InvoxiaAI-ERPNext) |
 
 ## What It Does
 
@@ -78,17 +101,45 @@ README.md
 
 The active graph is defined in `support_agent/personal_assistant/graph.py`.
 
-## Related AI Systems
+## API Surface
 
-| System | Purpose | Live Demo | Repository |
-| --- | --- | --- | --- |
-| LeadPilot AI Voice Agent | Inbound phone agent for call qualification, emergency detection, and lead logging. | [Live Demo](https://leadpilotai.sohaib.systems/) | [Repository](https://github.com/HafizMuhammadSohaibUmar/LeadPilotAI) |
-| Missed Call Text-Back AI Agent | SMS recovery and qualification after no-answer or busy calls. | [Live Demo](https://missed-call-text-back-ai-agent.sohaib.systems/demo) | [Repository](https://github.com/HafizMuhammadSohaibUmar/Missed-Call-Text-Back-AI-Agent) |
-| Outbound Follow-Up AI Agent | Estimate, no-show, re-engagement, and seasonal follow-up campaigns. | [Live Demo](https://outbound-followup-ai-agent.sohaib.systems/demo) | [Repository](https://github.com/HafizMuhammadSohaibUmar/Outbound-Follow-Up-AI-Agent) |
-| AI Auto Review Request Agent | Sentiment-aware post-job review and private feedback routing. | [Live Demo](https://ai-review-agent.sohaib.systems/demo) | [Repository](https://github.com/HafizMuhammadSohaibUmar/AI-Auto-Review-Request-Agent) |
-| Web Chat Lead Qualifier Agent | Embeddable RAG chat widget for contractor websites. | [Live Demo](https://web-chat-lead-qualifier-agent.sohaib.systems/demo) | [Repository](https://github.com/HafizMuhammadSohaibUmar/Web-Chat-Lead-Qualifier-Agent) |
-| Personal AI Agent | Self-hosted task, planning, and local-calendar assistant with LangGraph tools. | [Live Demo](https://personal-ai-agent.sohaib.systems/) | **This repo** |
-| Invoxia AI for ERPNext | Frappe/ERPNext assistant layer for navigation, voice input foundations, and live ERP answers. | [Live Demo](https://invoxia.sohaib.systems/) | [Repository](https://github.com/HafizMuhammadSohaibUmar/InvoxiaAI-ERPNext) |
+| Route | Purpose |
+| --- | --- |
+| `GET /` | Browser chat UI |
+| `GET /docs` | FastAPI OpenAPI docs |
+| `POST /chat/invoke` | LangServe chat invocation endpoint |
+| `GET /chat/playground/` | LangServe playground |
+
+## Tech Stack
+
+- FastAPI
+- LangServe
+- LangGraph
+- LangChain message and tool abstractions
+- Mistral via `langchain-mistralai`
+- SQLite for tasks, events, priority rules, and checkpoints
+- Poetry
+
+## Production Features
+
+- Tool-calling workflow over real local state
+- SQLite persistence for tasks and events
+- SQLite checkpoint persistence for conversation state
+- Browser UI with local thread persistence
+- Explicit assistant and tool nodes in LangGraph
+- Local scheduling logic with conflict avoidance
+- Priority-rule based daily planning and time-blocking
+
+## Verification
+
+There is no full automated test suite yet. Current verification is done through:
+
+- direct tool invocation for `daily_plan` and `timeblock_top_tasks`
+- browser chat prompts
+- LangServe playground calls
+- SQLite state inspection when needed
+
+Planned test coverage should include task creation, free-slot search, daily planning, time-blocking, and invalid tool-argument handling.
 
 ## Environment Variables
 
@@ -155,3 +206,13 @@ These files are ignored by Git because they contain runtime state.
 - Calendar events are local only; Google Calendar or Outlook sync is not implemented.
 - The assistant depends on the configured Mistral API key.
 
+## Deployment
+
+Run the app with the configured `PORT`:
+
+```bash
+poetry install
+poetry run python app.py
+```
+
+For a server deployment, run it behind a process manager such as systemd and expose the service through a reverse proxy.
